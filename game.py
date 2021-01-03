@@ -19,7 +19,7 @@ PINK = (255, 168, 142)
 PURPLE = (219, 76, 255)
 GREEN = (116, 211, 42)
  
-CYAN = (125, 181, 172)
+CYAN = (149, 171, 194)
 
 #set fonts
 font1 = font.SysFont("Calibri",30)
@@ -33,9 +33,9 @@ fontTreXs = font.SysFont("trebuchetms", 17)
 fontCon = font.SysFont("consolas",24,italic=True)
 
 #define the states
-INPUTSTATE = 0
+
 EXITSTATE = 1
-EXPLAINSTATE = 2
+EXPLAINSTATE = 0
 HOMESTATE = 3
 MAINSTATE = 4
 GAMESTATE = 5
@@ -47,76 +47,45 @@ INFORMSTATE = 10
 INVSTATE=11
 
 #load images
-bossPic = image.load("Boss.png")
-bubblePic = image.load("bubble.jpeg")
-angryBoss = image.load("YunaAngryBoss.jpg")
-happyBoss = image.load("YunaHappyBoss.jpg")
-infected = image.load("YunaInfectedImage.jpg")
-congrats = image.load("YunaCongrats.jpg")
-wings = image.load("YunaWing.png")
-portal = image.load("YunaPortal.png")
+bossPic = image.load("images/Boss.png")
+bubblePic = image.load("images/bubble.jpeg")
+angryBoss = image.load("images/angryBoss.png")
+happyBoss = image.load("images/happyBoss.png")
+wings = image.load("images/wing.png")
+portal = image.load("images/portal1.png")
 portal = transform.scale(portal, (80,80))
-portal2 = image.load("YunaPortal2.png")
+portal2 = image.load("images/portal2.png")
 portal2 = transform.scale(portal2,(80,80))
-knife = image.load("YunaKnife.png")
-axe= image.load("YunaAxe.png")
-warningImage = image.load("warning.png")
-fired = image.load("YunaFired.jpg")
-promotion = image.load("YunaPromotion.jpg")
-pill = image.load("YunaPill.png")
-hand = image.load("YunaHand.png")
-android = image.load("android.png")
-leg1= image.load("legs1.jpg")
-leg2= image.load("legs2.jpg")
-inputing = False
-helpPic = image.load("help.png")
-backpackPic = image.load("backpack.png")
-shopPic = image.load("shop.png")
-settingPic = image.load("setting.png")
-flagPic = image.load("flag.png")
-computerPic = image.load("computer.png")
-debugPic = image.load("debug.png")
-potion1Pic = image.load("potion1.png")
-potion2Pic = image.load("potion2.png")
-virusPic = image.load("virus.png")
-trapPic = image.load("trap.png")
-moneyBagPic = image.load("moneyBag.png")
-bombPic = image.load("bomb.png")
+pill = image.load("images/pill.png")
+android = image.load("images/android.png")
+leg1= image.load("images/legs1.jpg")
+leg2= image.load("images/legs2.jpg")
+helpPic = image.load("images/help.png")
+backpackPic = image.load("images/backpack.png")
+shopPic = image.load("images/shop.png")
+flagPic = image.load("images/flag.png")
+computerPic = image.load("images/computer.png")
+debugPic = image.load("images/debug.png")
+potion1Pic = image.load("images/potion1.png")
+potion2Pic = image.load("images/potion2.png")
+virusPic = image.load("images/virus.png")
+trapPic = image.load("images/trap.png")
+moneyBagPic = image.load("images/moneyBag.png")
+bombPic = image.load("images/bomb.png")
+timeBombPic = image.load("images/timeBomb.png")
+rulePic = image.load("images/rule.png")
 
 def drawArrow (x,y):
     draw.rect (screen, CYAN, (x,y,48,34))
     draw.rect (screen, WHITE, (x+10,y+10,15,14))
     draw.polygon (screen, WHITE, ((x+25,y+5),(x+25,y+29),(x+40,y+17)))
 
-def userInput (button,mx,my):   #get the username
-    state=INPUTSTATE
-
-    level = 1
-    money = 1000            #set default money as 1000
-    itemList = [5,5,5,0]    #no items
-    draw.rect(screen, WHITE, (0, 0, width, height))
-    
-    string = "CYBER BUGS"
-    text = fontTreL.render(string, 1, BLACK)
-    textSize = fontTreL.size(string)
-    textRect = Rect(width//2-textSize[0]//2, 200, textSize[0], textSize[1])
-    screen.blit(text, textRect)
-
-    startRect = draw.rect(screen, CYAN, (width//2-140,400,280,60))
-    string = "Get Started"
-    text = fontTreM.render(string, 1, BLACK)
-    textSize = fontTreM.size(string)
-    textRect = Rect(width//2-textSize[0]//2, 407, textSize[0], textSize[1])
-    screen.blit(text, textRect)
-
-    if button == 1:
-        if startRect.collidepoint(mx,my)==True:
-            state = EXPLAINSTATE
-
-    return state, level, money, itemList
-
 def explain(button,mx,my):  #explain the scenario to the user
-    global inputing
+    global inputing, entered
+
+    level = [1,1]
+    money = 100             #set default money
+    itemList = [0,0,0,0]    #no items
 
     state=EXPLAINSTATE      
     draw.rect(screen, WHITE, (0, 0, width, 2*height//3))     #draw background
@@ -147,7 +116,9 @@ def explain(button,mx,my):  #explain the scenario to the user
     writeRect=Rect(118+textSize[0],550,400,50)
     text = fontTreS.render(string, 1, BLACK)
     screen.blit(text, writeRect)
-
+    if entered == True:
+        state = HOMESTATE
+        entered = False
     if inputing == True:
         draw.rect(screen, CYAN,inputRect,2)
     if len(username)>=1:
@@ -157,7 +128,7 @@ def explain(button,mx,my):  #explain the scenario to the user
     if button == 1:
         if inputRect.collidepoint(mx,my)==True:
             inputing = True 
-    return state
+    return state, level, money, itemList
 
 def drawBack ():
     string = "BACK"
@@ -313,7 +284,7 @@ def mainHome (button,mx,my,speed):
     locationY = 700  
     
     screen.blit(transform.scale(flagPic, (120,120)),(270,200))
-    text = fontTreXs.render("Challenge", 1, BLACK)
+    text = fontTreXs.render("Virus Slayer", 1, BLACK)
     screen.blit(text, Rect(292, 325, 100, 100))
     playRect = Rect(270,200,120,120)
 
@@ -322,10 +293,10 @@ def mainHome (button,mx,my,speed):
     screen.blit(text, Rect(465, 325, 100, 100))
     freeRect =Rect(440,200,120,120)
 
-    screen.blit(transform.scale(helpPic, (120,120)),(610,200))
-    text = fontTreXs.render("Help", 1, BLACK)
-    screen.blit(text, Rect(652, 325, 100, 100))
-    helpRect = Rect(610,200,120,120)
+    screen.blit(transform.scale(timeBombPic, (100,100)),(615,210))
+    text = fontTreXs.render("Time Bomb", 1, BLACK)
+    screen.blit(text, Rect(634, 325, 100, 100))
+    timeBombRect = Rect(615,200,120,120)
 
     screen.blit(transform.scale(backpackPic, (120,120)),(270,400))
     text = fontTreXs.render("Inventory", 1, BLACK)
@@ -337,15 +308,16 @@ def mainHome (button,mx,my,speed):
     screen.blit(text, Rect(478, 530, 100, 100))
     storeRect = Rect(440,400,120,120)
 
-    screen.blit(transform.scale(settingPic, (120,120)),(610,400))
-    text = fontTreXs.render("Setting", 1, BLACK)
-    screen.blit(text, Rect(645, 530, 100, 100))
+    screen.blit(transform.scale(helpPic, (120,120)),(610,400))
+    text = fontTreXs.render("Help", 1, BLACK)
+    screen.blit(text, Rect(655, 530, 100, 100))
+    helpRect = Rect(620,400,120,120)
 
     if button==1:
         if playRect.collidepoint(mx,my) == True:
             #if the play button is clicked, change to the main screen
             state = MAINSTATE   
-            stage = randint(1,2)        #randomly choose a stage
+            stage = 1
             freePlay = False
         if freeRect.collidepoint(mx,my) == True:
             #if the free play button is clicked, change to the game screen
@@ -369,18 +341,23 @@ def mainHome (button,mx,my,speed):
             state = RULESTATE           
         if inventoryRect.collidepoint(mx,my) == True:
             state = INVSTATE
+        if timeBombRect.collidepoint(mx,my) == True:
+            state = MAINSTATE   
+            stage = 2
+            freePlay = False
             
     return state,stage, freePlay,circleX,circleY,circleX2,circleY2,numKilled,numBlue,radius,barHeight,locationX,locationY,speed
 
 def mainMenu (button,mx,my):
-    state = MAINSTATE     #define the state
-    #reset variables for a new game
+    state = MAINSTATE     
     gameStartTime = 0
     numKilled = 0
     circleX=[]
     circleY=[]
     circleX2=[]
-    circleY2=[]    
+    circleY2=[] 
+    circleX3=[]
+    circleY3=[]    
     numBlue = 0   
     radius = 20
     barHeight = 0
@@ -391,57 +368,70 @@ def mainMenu (button,mx,my):
     portalX2 = []
     portalY2 = []
     wingUsed = False
-    draw.rect(screen, BLACK, (0, 0, width, height))     #draw background
-
-    #write the user's balance
-    string = "$"+str(money)
-    text = font2.render(string, 1, YELLOW)
-    screen.blit(text, Rect(50, 50, 100, 100))      
+    draw.rect(screen, GREY, (0, 0, width, height))     #draw background
     
-    #write the rules for the specific level and stage
-    if stage == 1:
-        if level == 1:
-            ruleText = "Get rid of 40 viruses without dying!" 
+    string = "BACK"
+    text = fontTreS2.render(string, 1, BLACK)
+    fontSize = fontTreS2.size(string)
+    backRect = draw.rect(screen, CYAN, (width-75,0,80,37))
+    screen.blit(text, Rect(width-60, 7, fontSize[0],fontSize[1])) 
+
+    string = "# Successive Wins: %i" %(failList.count("1"))
+    text = fontTreS.render(string, 1, BLACK)
+    fontSize = fontTreS.size(string)
+    screen.blit(text, Rect(width//2-fontSize[0]//2, 150, fontSize[0],fontSize[1])) 
+    if stage ==1:
+        #write the rules for the specific level and stage 
+        levelText = str(level[0]) 
+        stageText = "VIRUS SLAYER"
+        for j in range (1,6):
+            if level[0] == j:
+                ruleText = "Get rid of %i viruses." %(40+15*(j-1))
+    else:
+        stageText = "TIME BOMB"
+        levelText = str(level[1]) 
+        if level[0] == 1:
+            ruleText = "Get rid of 15 viruses in 30 seconds."
+        elif level[0] == 2:
+            ruleText = "Get rid of 20 viruses in 30 seconds."
+        elif level[0] == 3:
+            ruleText = "Get rid of 30 viruses in 30 seconds."
+        elif level[0] == 4:
+            ruleText = "Get rid of 35 viruses in 45 seconds."
         else:
-            ruleText = "Get rid of 55 viruses without dying!"
-    elif stage == 2:
-        if level == 1:
-            ruleText = "Get rid of 30 viruses in 45 seconds!"
-        else:
-            ruleText = "Get rid of 40 viruses in 45 seconds!"
-    elif stage == 3:
-        ruleText = "Avoid the viruses!"
-        
-    text = font2.render(ruleText, 1, WHITE)
-    screen.blit(text, Rect(250, 250, 100, 100))    
+            ruleText = "Get rid of 45 viruses in 45 seconds."
+
+    text = fontTreM.render(ruleText, 1, BLACK)
+    textSize = fontTreM.size(ruleText)
+    screen.blit(text, Rect(width//2-textSize[0]//2, 300, 100, 100))    
         
     #write the level and stage
-    string = "Level: " + str(level) +"     Stage: " + str(stage)
-    text = font2.render(string, 1, WHITE)
-    screen.blit(text, Rect(350, 50, 100, 100))
+    string = str(stageText)
+    text = fontTreL.render(string, 1, BLACK)
+    fontSize = fontTreL.size(string)
+    screen.blit(text, Rect(width//2-fontSize[0]//2, 40, 100, 100))
+    string = "level: " + levelText
+    text = fontTreS.render(string, 1, BLACK)
+    fontSize = fontTreS.size(string)
+    screen.blit(text, Rect(width//2-fontSize[0]//2, 110, 100, 100))
     
     #draw&write the start option
-    startRect = Rect(350, 360, 300, 60) 
-    draw.rect(screen, PINK, startRect)
+    startRect = Rect(width//2-100, 380, 200, 50) 
+    draw.rect(screen, CYAN, startRect)
     string = "START"
-    text = font3.render(string, 1, WHITE)
-    screen.blit(text, Rect(440, 370, 100, 100))
-    
-    #draw&write the back option
-    backRect = Rect(900, 0, 100, 50) 
-    draw.rect(screen, GREY, backRect)    
-    string = "BACK"
-    text = font1.render(string, 1, WHITE)
-    screen.blit(text, Rect(920, 10, 100,100))      
+    text = fontTreM.render(string, 1, BLACK)
+    screen.blit(text, Rect(448, 385, 100, 100)) 
         
     if button==1:
         if startRect.collidepoint(mx,my)==True:
-            state = GAMESTATE       #change to the game screen when the button is clicked
+            state = GAMESTATE
             #reset variables for the next game
             circleX=[]
             circleY=[]
             circleX2=[]
-            circleY2=[]            
+            circleY2=[]    
+            circleX3=[]
+            circleY3=[]         
             numKilled = 0
             numBlue = 0
             gameStartTime = time.get_ticks()
@@ -455,7 +445,6 @@ def mainMenu (button,mx,my):
             portalY2 = []  
             wingUsed = False
         if backRect.collidepoint(mx,my) == True:
-            #go back if the back button is clicked
             state = HOMESTATE
         
     return state,gameStartTime,circleX,circleY,numKilled,circleX2,circleY2,numBlue,radius,barHeight,locationX,locationY,portalX,portalY,portalX2,portalY2,wingUsed
@@ -464,14 +453,15 @@ def writeRule (button,mx,my):
     #inform the user about the rules
     state = RULESTATE
     draw.rect(screen, WHITE, (0, 0, width, height))      
-    
-    #show the picture that has rules in
-    rulePic = image.load ("YunaRules.png")
-    screen.blit(rulePic,(100,50))
+
+    screen.blit(rulePic,(0,0))
     
     #back button
-    drawBack()
-    backRect = Rect(width-75,0,80,37)
+    string = "BACK"
+    text = fontTreS2.render(string, 1, BLACK)
+    fontSize = fontTreS2.size(string)
+    backRect = draw.rect(screen, CYAN, (width-75,0,80,37))
+    screen.blit(text, Rect(width-60, 7, fontSize[0],fontSize[1])) 
         
     if backRect.collidepoint(mx,my) == True:
         state=HOMESTATE  
@@ -487,7 +477,6 @@ def playGame (button,locationX,locationY,radius,killPurple,killBlue,healthRecove
     ranNum = 0
     anotherNum = 0
     purpleHit = False
-
     draw.rect(screen, BLACK, (0, 0, width, height)) 
     draw.line(screen,WHITE,(925,0),(925,800),2)     
     draw.rect(screen,WHITE,(940,20,45,350),3)       #draw a health bar
@@ -520,232 +509,150 @@ def playGame (button,locationX,locationY,radius,killPurple,killBlue,healthRecove
     if itemList[3] > 0:     #if the user has a wing item
         wingUsed = True
         itemList[3] -= 0.2  
-    elif level == 1:        #if the level is one and the user does not have a wing item
-        speed = 3           #speed is 3
-    elif level == 2:        #if the level is two and the user does not have a wing item
-        speed = 4           #speed is 4
     if wingUsed == True:
         #increase the speed if the wing is used
-        speed += 0.7
+        speed += 1
         realWings = transform.scale (wings,(3*round(radius),3*round(radius)//2))  #draw wings to the android
         screen.blit(realWings,(locationX-round(radius)//2,locationY))
+        wingUsed = False
 
-    if freePlay == True: 
-        #free play mode
-        if radius>20:       
-            for a in range (0,len(circleX3)):    
-                #draw the pill only when radius is higher than 30
-                screen.blit(transform.scale(pill,(30,30)),(circleX3[0],circleY3[0]))     
-                
-                #calculate the distance between the center of the circle and the pill image
-                distance = sqrt((circleX3[0]+14-locationX-radius)**2+(circleY3[0]+14-locationY-radius)**2)
-                
-                if distance < radius+18:  #sum of the radius and the pill image
-                    radius -= 7     #decrease the radius by 7
-                    #get rid of the collided pill image's coordinates from the list
-                    del circleX3[0]
-                    del circleY3[0]                    
+    if time.get_ticks()-startTimer>=2000:       #health bar decreases at a dif rate depending on the #viruses
+        if 10>len(circleX)>=6:
+            barHeight+=0.17
+        elif 13>len(circleX)>=10:
+            barHeight+=0.2
+        elif 16>len(circleX)>=13:
+            barHeight+=0.25
+        elif len(circleX)>=16:
+            barHeight+=0.3
+            
+    #items
+    if killPurple == True:
+        itemList[2] -= 1        #subtract one from the list 
+        killPurple = False      #set the variable to false again 
+        if len(circleX2) > 0:
+            #check if there is more than one purple virus
+            ranNum = randint(0,len(circleX2)-1) #get a random number
+            #get rid of a random purple virus
+            del circleX2[ranNum]
+            del circleY2[ranNum]
 
-                if time.get_ticks()-drawTime>3500:
-                    #get rid of the pill image's coordinate from the list after three seconds it is created
-                    del circleX3[0]
-                    del circleY3[0]  
+    if killBlue == True:
+        itemList[1] -= 1        #subtract one from the list 
+        killBlue = False
+        
+        if len(circleX) > 3:
+            for i in range (0,3):
+                deleteBlueNum = randint(0,len(circleX)-1)  
+                del circleX[deleteBlueNum]
+                del circleY[deleteBlueNum]
+        else:
+            for j in range (0,len(circleX)):
+                deleteBlueNum1 = randint(0,len(circleX)-1)  
+                del circleX[deleteBlueNum1]
+                del circleY[deleteBlueNum1]
+            
+    if healthRecover == True:
+        itemList[0] -= 1
+        healthRecover = False          
+        if barHeight > 0:      
+            barHeight -= 25
+
+    #blue viruses
+    x=0
+    while x<len(circleX):       
+        screen.blit(transform.scale(virusPic,(32,32)), (circleX[x],circleY[x]))
+        distance = sqrt((circleX[x]+15-locationX-radius)**2+(circleY[x]+15-locationY-radius)**2)
+
+        if distance < radius+15:  #sum of the radii's            
+            #get rid of the collided virus's coordinates from lists
+            del circleX[x]  
+            del circleY[x]
+            radius+=0.7   #makes the size of the android larger
+        x+=1
+    
+    #purple traps
+    for b in range (0,len(circleX2)):   
+        screen.blit(transform.scale(trapPic,(59,59)), (circleX2[b],circleY2[b]))   #draw purple trap viruses
+        distance = sqrt((circleX2[b]+29-locationX-radius)**2+(circleY2[b]+29-locationY-radius)**2)
+        if distance < radius+20:    #sum of the radii's 
+            purpleHit = True
+
+    if purpleHit == True:       #effect when purple traps are hit
+        barHeight+=0.6          #decreases health
+        if speed > 2.2:
+            speed -= 0.05 
+        purpleHit = False  
+
+    #health pill      
+    if len(circleX3)>0:
+        screen.blit(transform.scale(pill,(30,30)),(circleX3[-1],circleY3[-1]))     
+        pillDistance = sqrt((circleX3[-1]+14-locationX-radius)**2+(circleY3[-1]+14-locationY-radius)**2)
+    
+        if pillDistance < radius+18:    #sum of the radius and the pill image
+            radius -= 7.5               #decrease the radius by 7
+            del circleX3[-1]
+            del circleY3[-1]                    
+
+        if time.get_ticks()-drawTime>3500:
+            del circleX3[-1]
+            del circleY3[-1]  
+     
+    #portal
+    x = 0 
+    while x < len(portalX): 
+        portalCircle = draw.circle(screen,BLACK, (portalX[x]+40,portalY[x]+40),34)
+        screen.blit(portal,(portalX[x],portalY[x]))     #draw an enter portal
+        screen.blit(portal2,(portalX2[x],portalY2[x]))  #draw an exit portal
+        
+        if portalCircle.collidepoint(round(locationX+radius),round(locationY+radius)) == True:
+            #change the location to the exit portal
+            locationX = portalX2[x] + radius
+            locationY = portalY2[x]
+            
+            #get rid of the portals from the list
+            del portalX[x]      #enter portal
+            del portalY[x]            
+            del portalX2[x]     #exit portal
+            del portalY2[x]
+        x+=1    
+    
+    if barHeight>=344:
+            state = DONESTATE   #the game finishes when the health is zero
+    
+    if freePlay==True:
+        #bomb
         for i in range (0,len(bombList)//2):
             screen.blit(transform.scale(bombPic,(70,70)),(bombList[0],bombList[1]))
             bombDistance = sqrt((bombList[0]+17-locationX-radius)**2+(bombList[1]+17-locationY-radius)**2)
-            if bombDistance <radius+20:
+            if bombDistance < radius+20:
                 state=DONESTATE
                 bombList.clear()
-            if time.get_ticks()-drawTime2 > 7000:
+            if time.get_ticks()-drawTime2 > 6000:
                 bombList.clear()
-        
-        if time.get_ticks()-startTimer>=2000:       #health bar decreases at a dif rate depending on the #viruses
-            if 13>len(circleX)>=8:
-                barHeight+=0.15
-            elif 20>len(circleX)>=13:
-                barHeight+=0.2
-            elif 25>len(circleX)>=20:
-                barHeight+=0.25
-            elif len(circleX)>=25:
-                barHeight+=0.3
-
-        if barHeight>=344:
-            state = DONESTATE   #the game finishes when the health is zero
-            
-        for b in range (0,len(circleX2)):   #purple traps
-            screen.blit(transform.scale(trapPic,(59,59)), (circleX2[b],circleY2[b]))   #draw purple trap viruses
-            #calculate the distance between the center of the circles
-            distance = sqrt((circleX2[b]+29-locationX-radius)**2+(circleY2[b]+29-locationY-radius)**2)
-            if distance < radius+20:    #sum of the radii's 
-                purpleHit = True
-
-        if purpleHit == True:
-            barHeight+=0.6          #decreases health
-            speed -= 0.3 
-            purpleHit = False   
-        x=0    
-        while x<len(circleX):       #blue viruses
-            screen.blit(transform.scale(virusPic,(32,32)), (circleX[x],circleY[x]))
-
-            #calculate the distance between the center of the circles
-            distance = sqrt((circleX[x]+15-locationX-radius)**2+(circleY[x]+15-locationY-radius)**2)
     
-            if distance < radius+15:  #sum of the radii's            
-                #get rid of the collided virus's coordinates from lists
-                del circleX[x]  
-                del circleY[x]
-                radius+=0.7   #makes the size of the android larger
-            x+=1
-        
-        #items
-        if killPurple == True:
-            itemList[2] -= 1        #subtract one from the list 
-            killPurple = False      #set the variable to false again 
-            if len(circleX2) > 0:
-                #check if there is more than one purple virus
-                ranNum = randint(0,len(circleX2)-1) #get a random number
-                #get rid of a random purple virus
-                del circleX2[ranNum]
-                del circleY2[ranNum]
-
-        if killBlue == True:
-            itemList[1] -= 1        #subtract one from the list 
-            killBlue = False        #set the variable to false again
-            
-            if len(circleX) >= 3:
-                #check if there is more than three blue viruses
-                for i in range (0,3):   #get rid of a random blue virus
-                    anotherNum = randint(0,len(circleX)-1)  
-                    del circleX[anotherNum]
-                    del circleY[anotherNum]
-            else:
-               for i in range (0,len(circleX)):   #get rid of a random blue virus
-                    anotherNum = randint(0,len(circleX)-1)  
-                    del circleX[anotherNum]
-                    del circleY[anotherNum] 
-                
-        if healthRecover == True:
-            itemList[0] -= 1        #subtract one from the list
-            healthRecover = False   #set the variable to false again      
-            if barHeight > 0:       #check if the bar has started decreasing
-                barHeight -= 25     #make the height of the health bar become higher by 20
-                 
     else:
-        x = 0 
-        while x < len(portalX): 
-            screen.blit(portal,(portalX[x],portalY[x]))     #draw an enter portal
-            screen.blit(portal2,(portalX2[x],portalY2[x]))  #draw an exit portal
-            portalRect = Rect (portalX[x],portalY[x],80,80) #define the portal rect
-            
-            if portalRect.collidepoint(locationX+radius,locationY+radius) == True:
-                #change the location to the exit portal
-                locationX = portalX2[x]  + radius
-                locationY = portalY2[x]  
-                
-                #get rid of the portals from the list
-                del portalX[x]      #enter portal
-                del portalY[x]            
-                del portalX2[x]     #exit portal
-                del portalY2[x]
-            x+=1          
-
-        if radius>30:    
-            for a in range (0,len(circleX3)):  
-                #draw the red vaccine only when radius is higher than 30
-                screen.blit(transform.scale(pill,(30,30)),(circleX3[0],circleY3[0]))    
-                
-                #calculate the distance between the center of the circle and the pill image
-                distance = sqrt((circleX3[0]-locationX-radius)**2+(circleY3[0]-locationY-radius)**2)
-                
-                if distance < radius+10:  #sum of the radius and the pill image
-                    radius -= 7     #decrease the radius by 7 
-                    #get rid of the collided pill image's coordinates from the list
-                    del circleX3[0]
-                    del circleY3[0]                    
-
-                if time.get_ticks()-drawTime>3000:
-                    #get rid of the pill image's coordinate from the list after three seconds it is created
-                    del circleX3[0]
-                    del circleY3[0]    
-        
-        if time.get_ticks()-startTimer>=3000 and len(circleX)>=10:
-            #increase the health decrease bar when there are more than 10 viruses alive and stayed that way for 3 or more seconds
-            barHeight+=0.2
-            
         if barHeight>=344:
-            state = DONESTATE   #the game finishes when the health is zero
-            failed = True       #"failed" becomes true
-            
-        for b in range (0,len(circleX2)):
-            draw.circle(screen, PURPLE, (circleX2[b],circleY2[b]),15)   #draw  purple trap viruses
-    
-            #calculate the distance between the center of the circles
-            distance = sqrt((circleX2[b]-locationX-radius)**2+(circleY2[b]-locationY-radius)**2)
-            
-            if distance < radius+15:    #sum of the radii's 
-                state = DONESTATE       #the game finishes when collide with purple viruses
-                failed = True           #"failed" becomes true
-                print("you collided with a trap virus.")
-                
-        if killPurple == True:
-            #check if 'w' key is pressed
-            itemList[2] -= 1        #subtract one from the list 
-            killPurple = False      #set the variable to false again 
-            
-            if len(circleX2) > 0:
-                #check if there is more than one purple virus
-                ranNum = randint(0,len(circleX2)-1) #get a random number
-                #get rid of a random purple virus
-                del circleX2[ranNum]
-                del circleY2[ranNum]
+            failed = True
+        
+        #bomb
+        for i in range (0,len(bombList)//2):
+            screen.blit(transform.scale(bombPic,(70,70)),(bombList[0],bombList[1]))
+            bombDistance = sqrt((bombList[0]+17-locationX-radius)**2+(bombList[1]+17-locationY-radius)**2)
+            if bombDistance < radius+20:
+                failed = True
+                bombList.clear()
+                state=DONESTATE
+            if time.get_ticks()-drawTime2 > 6000:
+                bombList.clear()
 
-        if killBlue == True:
-            #check if 'e' key is pressed
-            itemList[1] -= 1        #subtract one from the list 
-            killBlue = False        #set the variable to false again
-            
-            if len(circleX) > 0:
-                #check if there is more than one blue virus
-                anotherNum = randint(0,len(circleX)-1)  #get a random number
-                #get rid of a random blue virus
-                del circleX[anotherNum]
-                del circleY[anotherNum]
-                
-        if healthRecover == True:
-            #check if 'r' key is pressed
-            itemList[0] -= 1        #subtract one from the list 
-            healthRecover = False   #set the variable to false again           
-            if barHeight > 0:       #check if the bar has started decreasing
-                barHeight -= 20     #make the height of the health bar become higher by 20
-                
-        x=0    
-        while x<len(circleX):
-            #draw normal blue viruses
-            screen.blit(transform.scale(virusPic,(10,10)), (circleX[x],circleY[x]))
-            
-            #calculate the distance between the center of the circles
-            distance = sqrt((circleX[x]-locationX-radius)**2+(circleY[x]-locationY-radius)**2)
-    
-            if distance < radius+7:  #sum of the radii's            
-                #get rid of the collided circle's coordinates from lists
-                del circleX[x]  
-                del circleY[x]
-                radius+=1   #makes the size of the android larger
-            x+=1
-            
         if stage == 1:
-            if level == 1:
-                if numKilled >= 40:
-                    #stage one, level one ends when 40 viruses are killed
+            for i in range (1,6):
+                if level[0] == i and numKilled>=(i*2):
                     state = DONESTATE
-            elif level == 2:
-                if numKilled >= 55:
-                    #stage one, level two ends when 55 viruses are killed
-                    state = DONESTATE
-                    
+
         if stage == 2:
             #write the time
-            #add zeros so that all the time has the same length (e.g. 348 milliseconds and 1930 into 00348 and 01930)
             if len(str(time.get_ticks() - gameStartTime))<4:
                 a = "00" + str(time.get_ticks() - gameStartTime)
             elif len(str(time.get_ticks() - gameStartTime))<5:
@@ -754,27 +661,48 @@ def playGame (button,locationX,locationY,radius,killPurple,killBlue,healthRecove
                 a = str(time.get_ticks() - gameStartTime)
                 
             string = a[:2] +":"+ a[2:4]     #make it into a time format (e.g. 1230 into 12:30) 
-            text = font1.render(string, 1, WHITE)
-            screen.blit(text, Rect(933, 600, 100, 100)) 
+            text = fontTreS2.render(string, 1, WHITE)
+            screen.blit(text, Rect(10, 10, 100, 100)) 
             
-            if 40000<time.get_ticks()-gameStartTime<40200 or 40500<time.get_ticks()-gameStartTime<40700:
-                screen.blit(transform.scale(warning,(100,100)),(10,10))  #draw a warning sign at 40 second
-                
-            if time.get_ticks()-gameStartTime>45000:
-                if level == 1:
-                    if numKilled>=30:
-                        #stage two, level one ends when more than 30 viruses are killed in 45 seconds
-                        state = DONESTATE
-                    else:
-                        state = DONESTATE           
-                        failed=True         #fail when not enough viruses were killed.                    
-                elif level == 2:
-                    if numKilled>=40:
-                        #stage two, level two ends when more than 40 viruses are killed in 45 seconds
-                        state = DONESTATE
-                    else:
-                        state = DONESTATE           
-                        failed=True         #fail when not enough viruses were killed.
+            if level[1] == 1 or level[1] == 2 or level[1] == 3:  
+                if time.get_ticks()-gameStartTime>30000:
+                    if level[1] == 1:
+                        if numKilled>=15:
+                            #stage two, level one ends when more than 30 viruses are killed in 45 seconds
+                            state = DONESTATE
+                        else:
+                            state = DONESTATE           
+                            failed=True         #fail when not enough viruses were killed.                    
+                    elif level[1] == 2:
+                        if numKilled>=20:
+                            #stage two, level two ends when more than 40 viruses are killed in 45 seconds
+                            state = DONESTATE
+                        else:
+                            state = DONESTATE           
+                            failed=True         #fail when not enough viruses were killed.
+                    elif level[1] == 3:
+                        if numKilled>=30:
+                            #stage two, level one ends when more than 30 viruses are killed in 45 seconds
+                            state = DONESTATE
+                        else:
+                            state = DONESTATE           
+                            failed=True         #fail when not enough viruses were killed.
+            else:
+                if time.get_ticks()-gameStartTime>45000:                    
+                    if level[1] == 4:
+                        if numKilled>=35:
+                            #stage two, level two ends when more than 40 viruses are killed in 45 seconds
+                            state = DONESTATE
+                        else:
+                            state = DONESTATE           
+                            failed=True
+                    elif level[1] == 5:
+                        if numKilled>=45:
+                            #stage two, level two ends when more than 40 viruses are killed in 45 seconds
+                            state = DONESTATE
+                        else:
+                            state = DONESTATE           
+                            failed=True 
             
     return state,failed, radius, locationX,locationY,killPurple,killBlue,healthRecover,itemList,numKilled,speed,wingUsed
 
@@ -823,13 +751,18 @@ def drawInv (button,mx,my):
 
 def doneGame (button,mx,my,money):               
     #shows score
-    global failList, circleX, circleY,circleX2,circleY2,numKilled, numBlue, radius, barHeight, locationX, locationY, speed
+    global failList, circleX, circleY,circleX2,circleY2,numKilled, numBlue, radius, barHeight, locationX, locationY, speed, level,failed, stageLevel
     state = DONESTATE  
-    stage = 1
     gameOver = False
-    levelUp = False    
+    levelUp = False   
+    speed = 3 
     draw.rect(screen, GREY, (0, 0, width, height))
-    
+    nextRect = Rect(width//2-80,400,160,52)
+
+    if stage == 1:
+        stageLevel = level[0]
+    else:
+        stageLevel = level[1]
     if freePlay == True:
         #show how many viruses the user has killed if it is free play
         fontSize = fontTreL.size("GAME OVER")
@@ -860,124 +793,171 @@ def doneGame (button,mx,my,money):
         screen.blit(text, textRect)  
 
     else:
+        nextRect = draw.rect(screen,CYAN, (width//2-80,400,160,52))
+        string = "Next"
+        fontSize = fontTreM.size(string)
+        text = fontTreM.render(string, 1, BLACK)
+        screen.blit(text, Rect(width//2-fontSize[0]//2, 405, 100, 100))
         if failed == True:      #when the user fails
-            screen.blit(transform.scale(angryBoss, (300,300)), Rect(70,300,200,200))       #display an angry boss image
-            screen.blit(transform.scale(infected, (400,200)), (370,250))        #display an infected sign            
+            screen.blit(transform.scale(angryBoss, (180,180)), (100,200))
+            string = "Mission Failed"
+            fontSize = fontTreM.size(string)
+            text = fontTreM.render(string, 1, BLACK)
+            screen.blit(text, Rect(width//2-fontSize[0]//2, 170, 100, 100))
+  
+            if stageLevel<5:
+                #lose money
+                screen.blit(transform.scale(moneyBagPic,(77,77)),(410,250))
+                text=fontTreM.render("- $%i" %100*stageLevel,1,BLACK)
+                screen.blit(text, Rect(510, 270, 100, 100))
         elif failed == False:   #when the user succeeds
-            screen.blit(happyBoss, Rect(50,300,200,200))       #display a happy boss image
-            for x in range (10,170):
-                screen.blit(transform.scale(congrats, (750,200)), (300,x))        #display a congratulation sign 
+            screen.blit(transform.scale(happyBoss, (180,180)), (100,200))       #display a happy boss image
             
-    if button == 1:
-        if backRect.collidepoint(mx,my) == True:
-            state = HOMESTATE
-            money+=numKilled
-        if againRect.collidepoint(mx,my) == True:
-            if freePlay == True:
-                money+=numKilled
-                state = GAMESTATE
-                circleX=[]
-                circleY=[]
-                circleX2=[]
-                circleY2=[]            
-                numKilled = 0
-                numBlue = 0
-                radius = 20
-                barHeight = 0
-                locationX = 500
-                locationY = 700 
-                speed = 3
-            else:
-                stage = randint(1,2)    #randomly chooses a stage for the next game
-                if failed == True:
-                    if failList[-1] != "0":                
-                        failList=[]             #clear the list if the previous one is not zero
-                    failList.append ("0")       #if failed, add zero
-                    if len(failList) == 3: 
-                        #Game-over if there are three consecutive fails
-                        gameOver = True
-                        state = INFORMSTATE #go to the inform screen to show game-osver
-                    else:
-                        state = MAINSTATE   #go back to the main screen
-                elif failed == False:
-                    money+=100      #get paid when succeed                   
-                    if failList[-1] != "1":            
-                        failList=[]             #clear the list if the previous one is not one
-                    failList.append ("1")       #if succeeded, add one 
-                    if len(failList) == 3:
-                        #level up if there are three consecutive success
-                        levelUp = True
-                        state = INFORMSTATE #go to the inform screen to show level up
-                    else:
-                        state = MAINSTATE   #go back to the main screen
+            string = "Mission Completed"
+            fontSize = fontTreM.size(string)
+            text = fontTreM.render(string, 1, BLACK)
+            screen.blit(text, Rect(width//2-fontSize[0]//2, 170, 100, 100))
 
-    return state,stage,money,gameOver,levelUp
+            if stageLevel<5:
+                #earn money
+                screen.blit(transform.scale(moneyBagPic,(77,77)),(410,250))
+                text=fontTreM.render("+ $%i" %(100*stageLevel),1,BLACK)
+                screen.blit(text, Rect(510, 270, 100, 100))
+
+            else:
+                #go to home button
+                backRect = draw.rect(screen,CYAN,(width//2-140,420,280,60)) 
+                text = fontTreM.render("Back to Main", 1, BLACK)
+                fontSize = fontTreM.size("Back to Main")
+                textRect = Rect(width//2-fontSize[0]//2, 430, 100,100)
+                screen.blit(text, textRect)  
+                
+    if button == 1:
+        if freePlay == True:
+            if backRect.collidepoint(mx,my) == True:
+                state = HOMESTATE
+                money+=numKilled
+            if againRect.collidepoint(mx,my) == True:
+                if freePlay == True:
+                    money+=numKilled
+                    state = GAMESTATE
+                    circleX=[]
+                    circleY=[]
+                    circleX2=[]
+                    circleY2=[]            
+                    numKilled = 0
+                    numBlue = 0
+                    radius = 20
+                    barHeight = 0
+                    locationX = 500
+                    locationY = 700 
+                    speed = 3
+        else:
+            if nextRect.collidepoint(mx,my) == True:
+                if failed ==True:
+                    if failList[-1] != "0":            
+                        failList=[]  
+                    failList.append("0")
+                    money-=100*stageLevel
+                else:
+                    money+=100*stageLevel
+                    if failList[-1] != "1":            
+                        failList=[]
+                    failList.append ("1")       
+                if len(failList) == 3:
+                    state = INFORMSTATE
+                    if failList[0]=="1":        #level up if there are three consecutive successes
+                        levelUp = True
+                    else:
+                        gameOver = True         #game over if there are three consecutive losses
+                else:
+                    state = MAINSTATE
+                 
+    return state,stage,money,gameOver,levelUp, speed
 
 def informUser (button,mx,my,level,speed,money,itemList,failList):
     #inform the user about game over or level up
     state = INFORMSTATE     #define the state
-    draw.rect (screen,WHITE,(0,0,width,height))     #draw the background
+    draw.rect (screen,GREY,(0,0,width,height))     #draw the background
     
+    nextRect = Rect (width//2-110,440,220,50)
+
     #draw&write a button to go back to the main screen
-    newRect = Rect(360,575,300,50)
-    draw.rect(screen,PINK,newRect)
-    string="BACK TO MAIN SCREEN"
-    text = font1.render(string, 1, WHITE)
-    textRect = Rect(370, 590, 100,100)
-    screen.blit(text, textRect)  
+    newRect=draw.rect(screen,CYAN,(width//2-110,515,220,50))
+    string="Back to Main"
+    text = fontTreS.render(string, 1, BLACK)
+    fontSize = fontTreS.size(string)
+    textRect = Rect(width//2-fontSize[0]//2, 525, 100,100)
+    screen.blit(text, textRect)
 
     if gameOver == True:
         #if it is game over, draw a note that is decreasing in size
-        if len(noteList) <5:
-            for x in range (10,5,-1):
-                #add the picture to the list in different sizes
-                note = transform.scale(fired,(x*30,x*30))       
-                noteList.append(note)
-            for x in range(0,5):
-                #show the picture with a 70 millisecond of delay
-                draw.rect(screen,WHITE,(0,0,width,570))
-                screen.blit(noteList[x],(300,180))
-                display.flip()
-                time.delay(70)
-        else:
-            screen.blit(transform.scale(fired,(150,150)),(300,180)) #after the loop ends it stays. 
+        string = "YOU ARE FIRED!"
+        fontSize = fontTreM.size(string)
+        text = fontTreM.render(string, 1, BLACK)
+        screen.blit(text, Rect(width//2-fontSize[0]//2, 100, 100,100))
+        #lose money
+        screen.blit(transform.scale(moneyBagPic,(77,77)),(410,250))
+        text=fontTreM.render(" $0",1,BLACK)
+        screen.blit(text, Rect(502, 270, 100, 100)) 
         
     elif levelUp == True:
-        if level == 2:
-            #notice that the user has finished the game
-            string = "GOOD BYE! TIME TO RETIRE..."
-            text = font1.render(string, 1, BLACK)
-            screen.blit(text, Rect(300, 470, 100,100))
-        else:
-            screen.blit (transform.scale(promotion,(450,200)), (250,200))   #notice that the user is promoted (level up)
+        if stageLevel<5:
             string = "YOU GOT PROMOTED!"
-            text = font1.render(string, 1, BLACK)
-            screen.blit(text, Rect(370, 470, 100,100))
-    
+            fontSize = fontTreM.size(string)
+            text = fontTreM.render(string, 1, BLACK)
+            screen.blit(text, Rect(width//2-fontSize[0]//2, 100, 100,100))
+
+            #earn bonus
+            screen.blit(transform.scale(moneyBagPic,(77,77)),(410,250))
+            text=fontTreM.render("+ $300",1,BLACK)
+            screen.blit(text, Rect(510, 270, 100, 100)) 
+
+            #next level
+            nextRect = draw.rect(screen,CYAN,(width//2-110,440,220,50))
+            string="Next Level"
+            text = fontTreS.render(string, 1, BLACK)
+            fontSize = fontTreS.size(string)
+            textRect = Rect(width//2-fontSize[0]//2, 450, 100,100)
+            screen.blit(text, textRect)  
+        else:
+            string = "STAGE COMPLETED"
+            text = fontTreL.render(string, 1, BLACK)
+            fontSize = fontTreL.size(string)
+            screen.blit(text, Rect(width//2-fontSize[0]//2, 100, 100,100))
+
+            #earn bonus
+            screen.blit(transform.scale(moneyBagPic,(77,77)),(410,250))
+            text=fontTreM.render("+ $500",1,BLACK)
+            screen.blit(text, Rect(510, 270, 100, 100)) 
+
     if button==1:
+        if nextRect.collidepoint(mx,my) == True: 
+            state = MAINSTATE
+            if stage ==1:
+                level[0] += 1
+            else:
+                level[1] += 1
+            failList = ["2"]        #reset fail list for the next level
+            money += 400            #give bonus money
         if newRect.collidepoint(mx,my) == True:     
-            if gameOver == True or (levelUp == True and level == 2):    
-                #go to the home state if the user is fired or the user finished the entire game
-                state = HOMESTATE
+            if gameOver == True:    
                 #reset the variables for a new game
-                money = 0   #lose all money
-                level = 1           #reset to level 1
-                itemList = [0,0,0,0]  #lose all the items
-                failList = ["2"]    #reset fail list for the new game
-                speed = 3   #reset the speed to 3
-            elif levelUp == True:
-                #go back to the home screen when the button is clicked
-                state = MAINSTATE
-                level+=1            #add one to level
-                failList = ["2"]    #reset fail list for the next level
-                speed = 4           #speed gets faster
-                money += 400        #give bonus money
+                money = 0               #lose all money
+                if stage ==1:
+                    level[0] = 1               #reset to level 1
+                else:
+                    level[1] = 1
+                itemList = [0,0,0,0]    #lose all the items
+                speed = 3               #reset the speed to 3
+            failList = ["2"]
+            state = HOMESTATE
                 
     return state,level,speed,money,itemList,failList
 
 #define/set variables
 running = True
-menuState = INPUTSTATE
+menuState = EXPLAINSTATE
 myClock = time.Clock()
 gameStartTime = 0
 button = mx = my = 0
@@ -1036,9 +1016,16 @@ legTime = 0
 mouthTime = 0
 wingUsed = False
 bombList=[]
-verified=True
+purpleVerified=True
 tooClose1=False
 tooClose2=False
+blueVerified=True
+pillVerified = True
+bombVerified = True
+portalVerified= True
+inputing = False
+stageLevel = 1
+entered = False
 
 # Game Loop
 while running:
@@ -1061,7 +1048,7 @@ while running:
                     #change to the explain state if the enter key is pressed  
                     if len(username)>=1:
                         #username has to be entered
-                        state = MAINSTATE          
+                        entered = True
                 else:
                     if len(key.name(evnt.key)) == 1:
                         #if it is more than one letter(i.e. "tabbed"), it does not show up on the screen     
@@ -1103,28 +1090,26 @@ while running:
         #move to left by the speed  
         locationX -= speed
         if locationX+radius<0:
-            locationX = 900     #go to the other side if it goes out of the screen
+            locationX = 920-radius     #go to the other side if it goes out of the screen
     if KEY_RIGHT == True:
         #move to right by the speed
         locationX += speed           
         if locationX+radius>900:
-            locationX = 0       #go to the other side if it goes out of the screen
+            locationX = radius       #go to the other side if it goes out of the screen
     if KEY_DOWN == True:
         #move down by the speed
         locationY += speed
         if locationY+radius>700:
-            locationY = 0       #go to the top if it goes out of the screen
+            locationY = radius       #go to the top if it goes out of the screen
     if KEY_UP == True:
         #move up by the speed
         locationY -= speed     
         if locationY+radius<0:
-            locationY = 700     #go to the bottom if it goes out of the screen
-    if menuState == INPUTSTATE: 
-        menuState, level, money, itemList = userInput(button, mx, my)
-    elif menuState == EXITSTATE:
+            locationY = 700-radius     #go to the bottom if it goes out of the screen
+    if menuState == EXITSTATE:
         running=False
     elif menuState == EXPLAINSTATE:
-        menuState = explain(button,mx,my)
+        menuState, level, money, itemList = explain(button,mx,my)
     elif menuState == HOMESTATE:
         menuState,stage,freePlay,circleX,circleY,circleX2,circleY2,numKilled,numBlue,radius,barHeight,locationX,locationY,speed = mainHome(button,mx,my,speed)
     elif menuState ==  MAINSTATE:
@@ -1145,8 +1130,17 @@ while running:
         #draw the body of an android
         realAndroid = transform.scale (android,(2*round(radius),2*round(radius)))
         screen.blit (realAndroid,(locationX,locationY))    
- 
-        if time.get_ticks() - lastTime > 1000:    #blue viruses 
+        
+        blueVerified = True
+        purpleVerified = True
+        pillVerified = True
+        bombVerified = True
+        portalVerified = True
+        tooClose1 = False
+        tooClose2 = False
+
+        #blue viruses 
+        if time.get_ticks() - lastTime > 700:    
             randx = randint(10, 890)         #generate a random x value
             randy = randint(10, 685)         #generate a random y value  
             if len(circleX)<1:
@@ -1154,88 +1148,106 @@ while running:
                 circleY.append(randy) 
             else:
                 for y in range (0, len(circleX)):
-                    distance2 = sqrt((circleX[y]-randx)**2 + (circleY[y]-randy)**2)
-                    if distance2 <= 15:
+                    distance2 = sqrt((circleX[y]-randx)**2 + (circleY[y]-randy)**2)     #no overlap with other blue viruses
+                    if distance2 <= 25:
                         tooClose1=True
                         break
+
             if tooClose1 == False:
+                for x in range (0,len(circleX2)):        #no overlap between the blue virus and the trap viruses 
+                    virusesDistance1 = sqrt((circleX2[x]+15-randx)**2 + (circleY2[x]+15-randy)**2)            
+                    if virusesDistance1 < 40:
+                        blueVerified = False
+ 
+                        break
+            if blueVerified == True:
                 circleX.append(randx)
                 circleY.append(randy)     
                     
                 lastTime = time.get_ticks()     #reset the lastTime variable for comparisons
                 numBlue += 1            #add one to a number of blue viruses
-            
-            if len(circleX) == 10:
-                #if there are more than 10 viruses on the screen, start the timer
+
+            if len(circleX) == 6:
+                #if there are more than 6 viruses on the screen, start the timer
                 startTimer = time.get_ticks()  
-                
-        if time.get_ticks() - lastTime2 > 4000:    #purple trap
+
+        #purple traps   
+        if time.get_ticks() - lastTime2 > 4000:
             ranNum = 0      #define the variable
-            randx2 = randint(30, 880)   #generate another random x value
-            randy2 = randint(30, 670)   #generate another random y value   
+            randx2 = randint(30, 860)   #generate another random x value
+            randy2 = randint(30, 650)   #generate another random y value   
             
             virusDistance = sqrt((locationX-randx2)**2 + (locationY-randy2)**2) #get the distance between the user and the trap virus
             if virusDistance > 25 + radius:     #add to the list only if the trap and the user are apart
-                for x in range (0,len(circleX)):
-                    virusesDistance = sqrt((circleX[x]-randx2)**2 + (circleY[x]-randy2)**2) #get the distance between the blue viruses and the trap virus            
-                    if virusesDistance < 30:
-                        #make it impossible to overlap any of the blue virus
-                        verified = False
+                for x in range (0,len(circleX)):        #distance btw purple traps and blue viruses
+                    virusesDistance = sqrt((circleX[x]-randx2-15)**2 + (circleY[x]-randy2-15)**2) 
+                    if virusesDistance < 40:
+                        purpleVerified = False
                         break
                         
-            if verified == True:
+            if purpleVerified == True:
                 if len(circleX2) < 1:
                     circleX2.append(randx2)    
                     circleY2.append(randy2)
                 else:
-                    for y in range (0, len(circleX2)):
-                        distance1 = sqrt((circleX2[y]-randx2)**2 + (circleY2[y]-randy2)**2)
-                        if distance1 <= 20:
+                    for y in range (0, len(circleX2)):      #no overlap between purple viruses
+                        distance1 = sqrt((circleX2[y]-randx2)**2 + (circleY2[y]-randy2)**2) 
+                        if distance1 <= 35:
                             tooClose2 = True
                             break
+            
             if tooClose2 == False:
                 circleX2.append(randx2)     
-                circleY2.append(randy2)   
+                circleY2.append(randy2)  
+            
+            if len(circleX2)>15:
+                randomNum = randint(1,len(circleX2))
+                del circleX2[randomNum-1] 
+                del circleY2[randomNum-1] 
             lastTime2 = time.get_ticks()    #reset the lastTime variable for comparisons
-                
-        if time.get_ticks()-gameStartTime>20000:
+
+        #health pill 
+        if radius>25:
             if time.get_ticks() - lastTime3 > 10000:    #get current time and subtract the last time
-                #circleX3=[]
-                #circleY3=[]
-                
-                randx3 = randint(30, 900)   #generate a random x value
+                randx3 = randint(30, 880)   #generate a random x value
                 randy3 = randint(30, 670)   #generate a random y value 
                 
-                circleX3.append(randx3)     #make a list that saves the x coordinates of a second circle
-                circleY3.append(randy3)     #make a list that saves the y coordinates of a second circle
-                
-                lastTime3 = time.get_ticks()    #reset the lastTime variable for comparisons
-                drawTime = time.get_ticks()     #get the time where the red vaccine is drawn 
-        if time.get_ticks()- lastTime5 > 10000:
-            randx5 = randint(30,800)
-            randy5 = randint(30,700)
-
-            bombList.append(randx5)
-            bombList.append(randy5)
-
-            lastTime5 = time.get_ticks()
-            drawTime2=time.get_ticks()
+                for x in range (0,len(circleX2)):       #no overlap with purple viruses
+                    virusesDistance = sqrt((circleX2[x]+5-randx3)**2 + (circleY2[x]+5-randy3)**2)   
+                    if virusesDistance < 35:
+                        pillVerified = False
+                        break
+                if pillVerified == True:
+                    circleX3.append(randx3)     #saves the x coordinates of a second circle
+                    circleY3.append(randy3)     #saves the y coordinates of a second circle
+                    drawTime = time.get_ticks()     #get the time where the red vaccine is drawn 
+            lastTime3 = time.get_ticks()    #reset the lastTime variable for comparisons
+        
+        #portals
         if time.get_ticks() - lastTime4 > 10000:
-            randx4 = randint(30, 800)   #generate a random x value
-            randy4 = randint(30, 700)   #generate a random y value             
-            randx5 = randint(30, 800)   #generate another random x value
-            randy5 = randint(30, 700)   #generate another random y value  
+            randx4 = randint(30, 820)   #generate a random x value
+            randy4 = randint(30, 650)   #generate a random y value             
+            randx5 = randint(30, 820)   #generate another random x value
+            randy5 = randint(30, 650)   #generate another random y value  
            
             portalDistance = sqrt((randx4-randx5)**2 + (randy4-randy5)**2)      #get the distance between portals
             
-            if portalDistance >= 300:    
-                #add to the list only when the portals are certain amount apart
-                portalX.append(randx4)      #make a list that saves the x coordinates of a enter portal
-                portalY.append(randy4)      #make a list that saves the y coordinates of a enter portal
-                portalX2.append(randx5)     #make a list that saves the x coordinates of a exit portal
-                portalY2.append(randy5)     #make a list that saves the y coordinates of a exit portal
+            for x in range (0,len(circleX2)):
+                distanceBtw1 = sqrt((circleX2[x]-randx4-15)**2 + (circleY2[x]-randy4-15)**2) 
+                distanceBtw2 = sqrt((circleX2[x]-randx5-15)**2 + (circleY2[x]-randy5-15)**2) 
+                if distanceBtw1 < 55 or distanceBtw2 < 55:
+                    portalVerified = False
+                    break 
 
-            if len(portalX)>=3:
+            if portalDistance >= 300:
+                if portalVerified == True:  
+                    #add to the list only when the portals are certain amount apart & not close to purple traps
+                    portalX.append(randx4)      
+                    portalY.append(randy4)      
+                    portalX2.append(randx5) 
+                    portalY2.append(randy5)     
+
+            if len(portalX)>=2:
                 #if there are more than 2 portals get rid of the first one
                 del portalX[0]
                 del portalY[0]
@@ -1243,17 +1255,35 @@ while running:
                 del portalY2[0]   
                 
             lastTime4 = time.get_ticks()    #reset the lastTime variable for comparisons   
+        
+        #bomb
+        if time.get_ticks()- lastTime5 > 9500:
+            randx5 = randint(30,850)
+            randy5 = randint(30,650)
+
+            for x in range (0,len(circleX2)):       #no overlap with purple viruses
+                if sqrt((circleX2[x]-randx5-15)**2 + (circleY2[x]-randy5-15)**2) < 45:
+                    bombVerified = False
+                    break
+            if bombVerified == True:
+                bombList.append(randx5)
+                bombList.append(randy5)
+
+                lastTime5 = time.get_ticks()
+                drawTime2=time.get_ticks()
             
     elif menuState == RULESTATE:
         menuState = writeRule (button,mx,my)
     elif menuState == STORESTATE:
         menuState, money, purchaseMsg, infoMsg, itemList = drawStore (button,mx,my,buttonList,infoList,money,purchaseMsg,infoMsg,itemList)
     elif menuState == DONESTATE:
-        menuState,stage,money,gameOver,levelUp = doneGame (button,mx,my,money)
+        menuState,stage,money,gameOver,levelUp,speed = doneGame (button,mx,my,money)
     elif menuState == INFORMSTATE:
         menuState,level,speed,money,itemList,failList = informUser(button,mx,my,level,speed,money,itemList,failList)
     elif menuState == INVSTATE:
         menuState = drawInv(button,mx,my)
+    elif menuState == BOMBSTATE:
+        menuState = timeBomb (button,mx,my)
       
     myClock.tick(60)    #waits long enough to have 60 fps
     display.flip()
