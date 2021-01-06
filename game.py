@@ -84,8 +84,8 @@ def explain(button,mx,my):  #explain the scenario to the user
     global inputing, entered
 
     level = [1,1]
-    money = 100             #set default money
-    itemList = [0,0,0,0]    #no items
+    money = 300             #set default money
+    itemList = [0,0,0,1]    #no items
 
     state=EXPLAINSTATE      
     draw.rect(screen, WHITE, (0, 0, width, 2*height//3))     #draw background
@@ -472,7 +472,8 @@ def playGame (button,locationX,locationY,radius,killPurple,killBlue,healthRecove
     #free play state
     global barHeight, startTimer
     state = GAMESTATE  
-
+    print(itemList)
+    print(speed)
     failed=False
     ranNum = 0
     anotherNum = 0
@@ -507,8 +508,8 @@ def playGame (button,locationX,locationY,radius,killPurple,killBlue,healthRecove
     screen.blit(text, Rect(947, 660, 100, 100))   
 
     if itemList[3] > 0:     #if the user has a wing item
-        wingUsed = True
-        itemList[3] -= 0.2  
+        wingUsed = True  
+        itemList[3] -= 1
     if wingUsed == True:
         #increase the speed if the wing is used
         speed += 1
@@ -648,7 +649,7 @@ def playGame (button,locationX,locationY,radius,killPurple,killBlue,healthRecove
 
         if stage == 1:
             for i in range (1,6):
-                if level[0] == i and numKilled>=(i*2):
+                if level[0] == i and numKilled>=(40+15*(i-1)):
                     state = DONESTATE
 
         if stage == 2:
