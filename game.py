@@ -472,8 +472,8 @@ def playGame (button,locationX,locationY,radius,killPurple,killBlue,healthRecove
     #free play state
     global barHeight, startTimer
     state = GAMESTATE  
-    print(itemList)
-    print(speed)
+    #print(itemList)
+    #print(speed)
     failed=False
     ranNum = 0
     anotherNum = 0
